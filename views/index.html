@@ -13,17 +13,23 @@
 </head>
 
 <body>
-    {{ template "count" . }}
+    {{ template "form" . }} {{ template "display" . }}
 </body>
 
 </html>
+{{ end }} {{ block "form" . }}
+<form hx-post="/contacts">
+    name: <input type="text" name="name" />
+    email:
+    <input type="email" name="email" />
+    <button type="submit">Create Contact</button>
+</form>
+{{ end}} {{ block "display" . }}
+<div>
+    {{ range .Contacts }}
+    <div>
+        Name: <span> {{ .Name }} </span> Email: <span> {{ .Email }} </span>
+    </div>
+    {{ end }}
+</div>
 {{ end }}
-
-
-{{ block "count" . }}
-<p>
-    Count {{ .Count }}
-</p>
-<button hx-target="body" hx-post="/count">iCount</button>
-
-{{ end}}
