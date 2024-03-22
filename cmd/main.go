@@ -31,7 +31,7 @@ type Contact struct {
 	Email string
 }
 
-func newContact(name string, email string) Contact {
+func newContact(name, email string) Contact {
 	return Contact{
 		Name:  name,
 		Email: email,
@@ -41,25 +41,23 @@ func newContact(name string, email string) Contact {
 type Contacts = []Contact
 
 type Data struct {
-    Contacts Contacts
+	Contacts Contacts
 }
-
 
 func newData() Data {
-    return Data{
-        Contacts: []Contact {
-            newContact("John", "jd@gmail.com"),
-            newContact("Clara", "cd@gmail.com"),
-        }
-    }
+	return Data{
+		Contacts: []Contact{
+			newContact("John", "jd@gmail.com"),
+			newContact("Clara", "cd@gmail.com"),
+		},
+	}
 }
-
 
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
-	count := Count{Count: 0}
+    data := newData()
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
