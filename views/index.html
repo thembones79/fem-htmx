@@ -18,14 +18,15 @@
 
 </html>
 {{ end }} {{ block "form" . }}
-<form hx-post="/contacts">
+<form hx-post="/contacts" hx-target="#display" hx-swap="outerHTML">
     name: <input type="text" name="name" />
     email:
     <input type="email" name="email" />
     <button type="submit">Create Contact</button>
 </form>
+<hr />
 {{ end}} {{ block "display" . }}
-<div>
+<div id="display">
     {{ range .Contacts }}
     <div>
         Name: <span> {{ .Name }} </span> Email: <span> {{ .Email }} </span>
