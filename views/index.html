@@ -19,9 +19,17 @@
 </html>
 {{ end }} {{ block "form" . }}
 <form hx-post="/contacts" hx-target="#display" hx-swap="outerHTML">
-    name: <input type="text" name="name" />
-    email:
-    <input type="email" name="email" />
+
+    name: <input {{ if .Values.name }} value="{{ .Values.name }}  type=" text" name="name" />
+
+    email: <input {{ if .Values.email }} value="{{ .Values.email }} type=" email" name="email" />
+
+    {{ if .Errors.email }}
+    <div style="color: red">
+        {{ .Errors.email }}
+    </div>
+    {{ end }}
+
     <button type="submit">Create Contact</button>
 </form>
 <hr />
