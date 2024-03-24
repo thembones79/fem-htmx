@@ -63,14 +63,26 @@ func newData() Data {
 }
 
 type FormData struct {
-    Values map[string]string
-    Errors map[string]string
+	Values map[string]string
+	Errors map[string]string
 }
 
 func newFormData() FormData {
-    return FormData{
-        Values: make(map[string]string),
-        Errors: make(map[string]string),
+	return FormData{
+		Values: make(map[string]string),
+		Errors: make(map[string]string),
+	}
+}
+
+type Page struct {
+    Data Data
+    Form FormData
+}
+
+func newPage(data Data, form FormData) Page {
+    return Page{
+        Data: data,
+        Form: form,
     }
 }
 
@@ -89,9 +101,13 @@ func main() {
 		name := c.FormValue("name")
 		email := c.FormValue("email")
 
-        if data.hasEmail(email){
-            return c.Render(400, "", data)
-        }
+		if data.hasEmail(email) {
+			formData := newFormData()
+			formData.Values["name"] = name
+			formData.Values["email"] = email
+			formData.Errors["email"] = "Email already exists"
+			return c.Render(400, "", formData)
+		}
 
 		data.Contacts = append(data.Contacts, newContact(name, email))
 		return c.Render(200, "display", data)
