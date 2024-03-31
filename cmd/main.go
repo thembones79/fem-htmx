@@ -79,10 +79,10 @@ type Page struct {
     Form FormData
 }
 
-func newPage(data Data, form FormData) Page {
+func newPage() Page {
     return Page{
-        Data: data,
-        Form: form,
+        Data: newData(),
+        Form: newFormData(),
     }
 }
 
@@ -90,27 +90,29 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
-	data := newData()
+    page := newPage()
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index", data)
+		return c.Render(200, "index", page)
 	})
 
 	e.POST("/contacts", func(c echo.Context) error {
 		name := c.FormValue("name")
 		email := c.FormValue("email")
 
-		if data.hasEmail(email) {
+		if page.Data.hasEmail(email) {
 			formData := newFormData()
 			formData.Values["name"] = name
 			formData.Values["email"] = email
 			formData.Errors["email"] = "Email already exists"
-			return c.Render(400, "", formData)
+			return c.Render(422, "form", formData)
 		}
 
-		data.Contacts = append(data.Contacts, newContact(name, email))
-		return c.Render(200, "display", data)
+        contact :=  newContact(name, email)
+		page.Data.Contacts = append(page.Data.Contacts, contact)
+        c.Render(200, "form", newFormData())
+		return c.Render(200, "oob-contact", contact)
 	})
 
 	e.Logger.Fatal(e.Start(":42069"))

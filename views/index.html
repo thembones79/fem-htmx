@@ -2,27 +2,44 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-    <title></title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="css/style.css" rel="stylesheet" />
-    <script src="https://unpkg.com/htmx.org@1.9.11"
-        integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+    <head>
+        <title></title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="css/style.css" rel="stylesheet" />
+        <script src="https://unpkg.com/htmx.org@1.9.11"
+            integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
         crossorigin="anonymous"></script>
-</head>
+    </head>
 
-<body>
-    {{ template "form" . }} {{ template "display" . }}
-</body>
+    <body>
+        {{ template "form" .Form }}
+        <hr />
+        {{ template "display" .Data }}
+        <script>
+            document.addEventListener("DOMContrntLoaded", (event) => {
+                document.body.addEventListener('htmx:beforeSwap', function (e) {
+                    if (e.detail.xhr.status === 422) {
+                        e.detail.shouldSwap = true;
+                        e.detail.isError = false;
+                    }
+                });
+            });
+
+
+
+        </script>
+    </body>
 
 </html>
-{{ end }} {{ block "form" . }}
-<form hx-post="/contacts" hx-target="#display" hx-swap="outerHTML">
+{{ end }}
 
-    name: <input {{ if .Values.name }} value="{{ .Values.name }}  type=" text" name="name" />
+{{ block "form" . }}
+<form hx-post="/contacts" hx-swap="outerHTML" >
 
-    email: <input {{ if .Values.email }} value="{{ .Values.email }} type=" email" name="email" />
+    name: <input {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} type=" text" name="name" />
+
+    email: <input {{ if .Values.email }} value="{{ .Values.email }}" {{ end }} type=" email" name="email" />
 
     {{ if .Errors.email }}
     <div style="color: red">
@@ -36,9 +53,21 @@
 {{ end}} {{ block "display" . }}
 <div id="display">
     {{ range .Contacts }}
+        {{ template "contact" . }}
+    {{ end }}
+</div>
+{{ end }}
+
+
+{{ block "contact" .}}
     <div>
         Name: <span> {{ .Name }} </span> Email: <span> {{ .Email }} </span>
     </div>
-    {{ end }}
-</div>
+{{ end }}
+
+
+{{ block "oob-contact" .}}
+    <div id="contacts" hx-swap-oob="afterbegin">
+        {{ template "contact" . }}
+    </div>
 {{ end }}
